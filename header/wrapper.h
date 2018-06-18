@@ -3,13 +3,6 @@
 
 
 #include    "../llipter.h"
-#include    <sys/socket.h>  // socket() connect() bind() listen() accept()
-#include	<arpa/inet.h>	// inet_pton() inet_ntop()
-#include    <unistd.h>      // write() close()
-#include    <errno.h>       // errno
-
-
-
 
 
 

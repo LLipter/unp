@@ -3,11 +3,7 @@
 
 
 #include	"../llipter.h"
-#include	<sys/stat.h>		// umask()
-#include	<sys/resource.h>	// getrlimit()
-#include	<signal.h>			// sigemptyset()
-#include	<fcntl.h>			// open()
-#include	<syslog.h>			// openlog() syslog()
+
 
 void
 daemonize(const char *cmd)
