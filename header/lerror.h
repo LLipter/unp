@@ -1,13 +1,13 @@
 #ifndef LERROR_H
 #define LERROR_H
 
-
+#include    "../llipter.h"
 #include    <stdarg.h>      // va_list va_start() va_arg() va_end()
 #include    <stdio.h>       // vsnprintf() printf() fputs()
                             // perror()
 #include    <stdlib.h>      // exit()
 
-#define MAXLINE 1024
+
 
 void
 err_sys(const char* msg,...){

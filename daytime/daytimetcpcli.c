@@ -1,5 +1,4 @@
-#include	"llipter.h"
-#include	<string.h>
+#include	"../llipter.h"
 
 
 
