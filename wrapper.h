@@ -1,25 +1,16 @@
+#ifndef WARPPER_H
+#define WARPPER_H
+
+
+#include    "llipter.h"
 #include    <sys/socket.h>  // socket() connect() bind() listen() accept()
-#include    <stdarg.h>      // va_list va_start() va_arg() va_end()
-#include    <stdio.h>       // vsnprintf() printf() fputs()
-                            // perror()
-#include    <stdlib.h>      // exit()
 #include	<arpa/inet.h>	// inet_pton() inet_ntop()
-                            // struct sockaddr_in
 #include    <unistd.h>      // write() close()
 
-#define MAXLINE 1024
+
 #define LISTENQ 1024
 
-void
-err_sys(const char* msg,...){
-    char    msgstr[MAXLINE];
-    va_list arg;
-    va_start(arg,msg);
-    vsnprintf(msgstr,MAXLINE,msg,arg);
-    va_end(arg);
-    perror(msgstr);
-    exit(1);
-}
+
 
 int
 Socket(int domain, int type, int protocol){
@@ -102,3 +93,6 @@ Close(int fildes){
         err_sys("close error");
     return ret;
 }
+
+
+#endif
