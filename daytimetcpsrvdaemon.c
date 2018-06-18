@@ -32,11 +32,11 @@ main(int argc, char **argv)
 	for ( ; ; ) {
 		len = sizeof(cliaddr);
 		connfd = Accept(listenfd, (struct sockaddr *) &cliaddr, &len);
-		dprintf(logfd ,"connection from %s, port %d\n",
-			   Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof(buff)),
-			   ntohs(cliaddr.sin_port));
         ticks = time(NULL);
         snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
+		dprintf(logfd ,"%.24s connection from %s, port %d\n", ctime(&ticks),
+			   Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof(buff)),
+			   ntohs(cliaddr.sin_port));
         Write(connfd, buff, strlen(buff));
 
 		Close(connfd);
