@@ -3,7 +3,7 @@
 #include    <stdio.h>       // vsnprintf() printf() fputs()
                             // perror()
 #include    <stdlib.h>      // exit()
-#include	<arpa/inet.h>	// inet_pton() 
+#include	<arpa/inet.h>	// inet_pton() inet_ntop()
                             // struct sockaddr_in
 #include    <unistd.h>      // write() close()
 
@@ -38,6 +38,16 @@ Inet_pton(int af, const char * src, void * dst){
         err_sys("inet_pton error for %s", src);
     return ret;
 }
+
+const char *
+Inet_ntop(int af, const void * src, char * dst, socklen_t size){
+    const char * ret;
+    ret = inet_ntop(af, src, dst, size);
+    if(ret == NULL)
+        err_sys("inet_ntop error");
+    return ret;
+}
+
 
 int
 Connect(int socket, const struct sockaddr *address,socklen_t address_len){
