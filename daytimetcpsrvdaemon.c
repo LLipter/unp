@@ -6,8 +6,9 @@
 int
 main(int argc, char **argv)
 {
+	daemonize("daytimetcpsrv daemonizing");
 
-	int					listenfd, connfd;
+	int					listenfd, connfd, logfd;
 	socklen_t			len;
 	struct sockaddr_in	servaddr, cliaddr;
 	char				buff[MAXLINE];
@@ -24,10 +25,14 @@ main(int argc, char **argv)
 
 	Listen(listenfd, LISTENQ);
 
+	int oflag = O_WRONLY | O_APPEND | O_CREAT;
+	int mode = 0644;
+	logfd = open("daytimelog.txt", oflag, mode);
+
 	for ( ; ; ) {
 		len = sizeof(cliaddr);
 		connfd = Accept(listenfd, (struct sockaddr *) &cliaddr, &len);
-		printf("connection from %s, port %d\n",
+		dprintf(logfd ,"connection from %s, port %d\n",
 			   Inet_ntop(AF_INET, &cliaddr.sin_addr, buff, sizeof(buff)),
 			   ntohs(cliaddr.sin_port));
         ticks = time(NULL);
