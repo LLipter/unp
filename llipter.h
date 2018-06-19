@@ -20,11 +20,14 @@
 #include    <unistd.h>          // write() close() chdir() dup()
                                 // setsid() fork()
 #include    <errno.h>           // errno
+#include    <sys/wait.h>        // waitpid()
 
 #include    "header/lerror.h"
 #include    "header/wrapper.h"
 #include    "header/daemon.h"
 #include    "header/readwrite.h"
+#include    "header/sig.h"
+
 
 
 #endif
