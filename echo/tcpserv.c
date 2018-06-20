@@ -1,28 +1,16 @@
 #include	"../llipter.h"
-
-void
-str_echo(int sockfd)
-{
-	ssize_t		n;
-	char		buf[MAXLINE];
-
-again:
-	while ( (n = read(sockfd, buf, MAXLINE)) > 0)
-		Writen(sockfd, buf, n);
-
-	if (n < 0 && errno == EINTR)
-		goto again;
-	else if (n < 0)
-		err_sys("str_echo: read error");
-}
-
+#include	<limits.h>		/* for OPEN_MAX */
+#include	<time.h>
 
 int
 main(int argc, char **argv)
 {
-	int					listenfd, connfd;
-	pid_t				childpid;
+	int					i, maxi, listenfd, connfd, sockfd;
+	int					nready;
+	ssize_t				n;
+	char				buf[MAXLINE];
 	socklen_t			clilen;
+	struct pollfd		client[OPEN_MAX];
 	struct sockaddr_in	cliaddr, servaddr;
 
 	listenfd = Socket(AF_INET, SOCK_STREAM, 0);
@@ -36,22 +24,68 @@ main(int argc, char **argv)
 
 	Listen(listenfd, LISTENQ);
 
-	Signal(SIGCHLD, sig_chld);	/* must call waitpid() */
+	client[0].fd = listenfd;
+	client[0].events = POLLRDNORM;
+	for (i = 1; i < OPEN_MAX; i++)
+		client[i].fd = -1;		/* -1 indicates available entry */
+	maxi = 0;					/* max index into client[] array */
+/* end fig01 */
 
+/* include fig02 */
 	for ( ; ; ) {
-		clilen = sizeof(cliaddr);
-		if ( (connfd = accept(listenfd, (struct sockaddr *) &cliaddr, &clilen)) < 0) {
-			if (errno == EINTR)
-				continue;		/* back to for() */
-			else
-				err_sys("accept error");
+		nready = Poll(client, maxi+1, -1);
+
+		if (client[0].revents & POLLRDNORM) {	/* new client connection */
+			clilen = sizeof(cliaddr);
+			connfd = Accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
+// #ifdef	NOTDEF
+			char	buf[MAXLINE];
+			printf("new client: %s\n", Inet_ntop(AF_INET, (struct sockaddr *) &cliaddr, buf, clilen));
+// #endif
+
+			for (i = 1; i < OPEN_MAX; i++)
+				if (client[i].fd < 0) {
+					client[i].fd = connfd;	/* save descriptor */
+					break;
+				}
+			if (i == OPEN_MAX)
+				err_sys("too many clients");
+
+			client[i].events = POLLRDNORM;
+			if (i > maxi)
+				maxi = i;				/* max index in client[] array */
+
+			if (--nready <= 0)
+				continue;				/* no more readable descriptors */
 		}
 
-		if ( (childpid = Fork()) == 0) {	/* child process */
-			Close(listenfd);	/* close listening socket */
-			str_echo(connfd);	/* process the request */
-			exit(0);
+		for (i = 1; i <= maxi; i++) {	/* check all clients for data */
+			if ( (sockfd = client[i].fd) < 0)
+				continue;
+			if (client[i].revents & (POLLRDNORM | POLLERR)) {
+				if ( (n = read(sockfd, buf, MAXLINE)) < 0) {
+					if (errno == ECONNRESET) {
+							/*4connection reset by client */
+// #ifdef	NOTDEF
+						printf("client[%d] aborted connection\n", i);
+// #endif
+						Close(sockfd);
+						client[i].fd = -1;
+					} else
+						err_sys("read error");
+				} else if (n == 0) {
+						/*4connection closed by client */
+// #ifdef	NOTDEF
+					printf("client[%d] closed connection\n", i);
+// #endif
+					Close(sockfd);
+					client[i].fd = -1;
+				} else
+					Writen(sockfd, buf, n);
+
+				if (--nready <= 0)
+					break;				/* no more readable descriptors */
+			}
 		}
-		Close(connfd);			/* parent closes connected socket */
 	}
 }

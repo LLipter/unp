@@ -18,6 +18,7 @@
 #include    <sys/socket.h>      // socket() connect() bind() listen() accept() shutdown()
 #include    <sys/wait.h>        // waitpid()
 #include    <sys/select.h>      // select()
+#include    <poll.h>            // poll()
 #include	<arpa/inet.h>	    // inet_pton() inet_ntop()
 #include    <unistd.h>          // write() close() chdir() dup()
                                 // setsid() fork()

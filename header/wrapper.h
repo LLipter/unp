@@ -119,6 +119,14 @@ Select(int nfds, fd_set * readfds, fd_set * writefds,fd_set * errorfds, struct t
     return ret;
 }
 
+int
+Poll(struct pollfd fds[], nfds_t nfds, int timeout){
+    int ret = poll(fds, nfds, timeout);
+    if(ret < 0)
+        err_sys("poll error");
+    return ret; 
+}
+
 void
 Shutdown(int socket, int how){
     int ret = shutdown(socket, how);
