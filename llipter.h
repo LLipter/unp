@@ -15,18 +15,26 @@
 #include	<signal.h>			// sigemptyset() sigaction()
 #include	<fcntl.h>			// open()
 #include	<syslog.h>			// openlog() syslog()
-#include    <sys/socket.h>      // socket() connect() bind() listen() accept()
+#include    <sys/socket.h>      // socket() connect() bind() listen() accept() shutdown()
+#include    <sys/wait.h>        // waitpid()
+#include    <sys/select.h>      // select()
 #include	<arpa/inet.h>	    // inet_pton() inet_ntop()
 #include    <unistd.h>          // write() close() chdir() dup()
                                 // setsid() fork()
 #include    <errno.h>           // errno
-#include    <sys/wait.h>        // waitpid()
+#include    <math.h>
 
 #include    "header/lerror.h"
 #include    "header/wrapper.h"
 #include    "header/daemon.h"
 #include    "header/readwrite.h"
 #include    "header/sig.h"
+
+
+
+int lmax(int a,int b){
+    return a > b ? a : b;
+}
 
 
 

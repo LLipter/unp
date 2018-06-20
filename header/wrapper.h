@@ -64,10 +64,19 @@ Accept(int socket, struct sockaddr * address,socklen_t * address_len){
 
 ssize_t
 Write(int fildes, const void *buf, size_t nbyte){
-    int ret;
+    ssize_t ret;
     ret = write(fildes,buf,nbyte);
     if(ret < 0)
         err_sys("write error");
+    return ret;
+}
+
+
+ssize_t
+Read(int fildes, void *buf, size_t nbyte){
+    ssize_t ret = read(fildes, buf, nbyte);
+    if(ret < 0)
+        err_sys("read error");
     return ret;
 }
 
@@ -80,7 +89,7 @@ Close(int fildes){
 
 pid_t
 Fork(void){
-    int pid = fork();
+    pid_t pid = fork();
     if(pid < 0)
         err_sys("fork error");
     return pid;
@@ -102,7 +111,18 @@ Fputs(const char * s, FILE * stream){
         err_sys("fputs error");
 }
 
+void
+Select(int nfds, fd_set * readfds, fd_set * writefds,fd_set * errorfds, struct timeval * timeout){
+    int ret = select(nfds,readfds,writefds,errorfds,timeout);
+    if(ret < 0)
+        err_sys("select error");
+}
 
-
+void
+Shutdown(int socket, int how){
+    int ret = shutdown(socket, how);
+    if(ret < 0)
+        err_sys("shutdown error");
+}
 
 #endif
