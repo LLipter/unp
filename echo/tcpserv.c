@@ -39,8 +39,7 @@ main(int argc, char **argv)
 			clilen = sizeof(cliaddr);
 			connfd = Accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
 // #ifdef	NOTDEF
-			char	buf[MAXLINE];
-			printf("new client: %s\n", Inet_ntop(AF_INET, (struct sockaddr *) &cliaddr, buf, clilen));
+			printf("new client: %s\n", Sock_ntop((struct sockaddr *) &cliaddr, clilen));
 // #endif
 
 			for (i = 1; i < OPEN_MAX; i++)
