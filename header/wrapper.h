@@ -111,11 +111,12 @@ Fputs(const char * s, FILE * stream){
         err_sys("fputs error");
 }
 
-void
+int
 Select(int nfds, fd_set * readfds, fd_set * writefds,fd_set * errorfds, struct timeval * timeout){
     int ret = select(nfds,readfds,writefds,errorfds,timeout);
     if(ret < 0)
         err_sys("select error");
+    return ret;
 }
 
 void
