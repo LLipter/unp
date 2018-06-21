@@ -38,9 +38,7 @@ main(int argc, char **argv)
 		if (client[0].revents & POLLRDNORM) {	/* new client connection */
 			clilen = sizeof(cliaddr);
 			connfd = Accept(listenfd, (struct sockaddr *) &cliaddr, &clilen);
-// #ifdef	NOTDEF
 			printf("new client: %s\n", Sock_ntop((struct sockaddr *) &cliaddr, clilen));
-// #endif
 
 			for (i = 1; i < OPEN_MAX; i++)
 				if (client[i].fd < 0) {
@@ -64,19 +62,15 @@ main(int argc, char **argv)
 			if (client[i].revents & (POLLRDNORM | POLLERR)) {
 				if ( (n = read(sockfd, buf, MAXLINE)) < 0) {
 					if (errno == ECONNRESET) {
-							/*4connection reset by client */
-// #ifdef	NOTDEF
+						/* connection reset by client */
 						printf("client[%d] aborted connection\n", i);
-// #endif
 						Close(sockfd);
 						client[i].fd = -1;
 					} else
 						err_sys("read error");
 				} else if (n == 0) {
-						/*4connection closed by client */
-// #ifdef	NOTDEF
+					/* connection closed by client */
 					printf("client[%d] closed connection\n", i);
-// #endif
 					Close(sockfd);
 					client[i].fd = -1;
 				} else
