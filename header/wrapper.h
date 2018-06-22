@@ -134,4 +134,21 @@ Shutdown(int socket, int how){
         err_sys("shutdown error");
 }
 
+
+ssize_t
+Recvfrom(int socket, void * buffer, size_t length, int flags, struct sockaddr * address, socklen_t * address_len){
+    ssize_t n = recvfrom(socket,buffer,length,flags,address,address_len);
+    if(n < 0)
+        err_sys("recvfrom error");
+    return n;
+}
+
+ssize_t
+Sendto(int socket, const void *buffer, size_t length, int flags,const struct sockaddr *dest_addr, socklen_t dest_len){
+    ssize_t n = sendto(socket,buffer,length,flags,dest_addr,dest_len);
+    if(n < 0)
+        err_sys("sendto error");
+    return n;
+}
+
 #endif
