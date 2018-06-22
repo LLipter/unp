@@ -3,24 +3,16 @@
 void
 dg_cli(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
 {
-	int				n;
-	char			sendline[MAXLINE], recvline[MAXLINE + 1];
-	socklen_t		len;
-	struct sockaddr	*preply_addr;
+	int		n;
+	char	sendline[MAXLINE], recvline[MAXLINE + 1];
 
-	preply_addr = Malloc(servlen);
+	Connect(sockfd, (struct sockaddr *) pservaddr, servlen);
 
 	while (Fgets(sendline, MAXLINE, fp) != NULL) {
 
-		Sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
+		Write(sockfd, sendline, strlen(sendline));
 
-		len = servlen;
-		n = Recvfrom(sockfd, recvline, MAXLINE, 0, preply_addr, &len);
-		if (len != servlen || memcmp(pservaddr, preply_addr, len) != 0) {
-			printf("reply from %s (ignored)\n",
-					Sock_ntop(preply_addr, len));
-			continue;
-		}
+		n = Read(sockfd, recvline, MAXLINE);
 
 		recvline[n] = 0;	/* null terminate */
 		Fputs(recvline, stdout);
