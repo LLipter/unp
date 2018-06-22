@@ -3,14 +3,24 @@
 void
 dg_cli(FILE *fp, int sockfd, const struct sockaddr *pservaddr, socklen_t servlen)
 {
-	int	n;
-	char	sendline[MAXLINE], recvline[MAXLINE + 1];
+	int				n;
+	char			sendline[MAXLINE], recvline[MAXLINE + 1];
+	socklen_t		len;
+	struct sockaddr	*preply_addr;
+
+	preply_addr = Malloc(servlen);
 
 	while (Fgets(sendline, MAXLINE, fp) != NULL) {
 
 		Sendto(sockfd, sendline, strlen(sendline), 0, pservaddr, servlen);
 
-		n = Recvfrom(sockfd, recvline, MAXLINE, 0, NULL, NULL);
+		len = servlen;
+		n = Recvfrom(sockfd, recvline, MAXLINE, 0, preply_addr, &len);
+		if (len != servlen || memcmp(pservaddr, preply_addr, len) != 0) {
+			printf("reply from %s (ignored)\n",
+					Sock_ntop(preply_addr, len));
+			continue;
+		}
 
 		recvline[n] = 0;	/* null terminate */
 		Fputs(recvline, stdout);
@@ -29,6 +39,7 @@ main(int argc, char **argv)
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(SERV_PORT);
+	servaddr.sin_len = sizeof(servaddr);
 	Inet_pton(AF_INET, argv[1], &servaddr.sin_addr);
 
 	sockfd = Socket(AF_INET, SOCK_DGRAM, 0);

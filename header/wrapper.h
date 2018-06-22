@@ -151,4 +151,13 @@ Sendto(int socket, const void *buffer, size_t length, int flags,const struct soc
     return n;
 }
 
+
+void *
+Malloc(size_t size){
+    void * ret = malloc(size);
+    if(ret == NULL)
+        err_sys("malloc error");
+    return ret;
+}
+
 #endif
